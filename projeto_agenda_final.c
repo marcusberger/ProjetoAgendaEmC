@@ -13,19 +13,22 @@
 #define ARGS_SIZE 10
 #define TEL_SIZE 20
 
-struct celula{
+struct contato{
+
+    int tamanho;
 
     char nome[STRING_SIZE];
     char sobrenome[STRING_SIZE];
     char endereco[STRING_SIZE];
     char telefone[TEL_SIZE];
     char email[STRING_SIZE];
+    char dataNascimento[STRING_SIZE];
 
-    struct celula *prox;
-    
+
+    struct contato *prox;
 };
+typedef struct contato *agenda;
 
-typedef struct celula *agenda;
 
 // Funcao que recebe uma string 'str' e remove
 // as quebras de linhas e espacos do final.
@@ -37,23 +40,29 @@ void strtrim(char* str) {
 }
 
 agenda createAgenda() {
-    // ME COMPLETE!
-    return NULL;
-}
 
+    agenda ag;
+    ag = (agenda) malloc(sizeof(*ag));
+    ag->tamanho = 0;
+    ag->prox = NULL;
+
+    return ag;
+}
 // Um exemplo de como ler as entradas
 int addEntry(char *cmd, int argc, char **argv, agenda ag) {
     // ME COMPLETE!
-    char *nome, *endereco, *telefone, *sobrenome, *email;
-
+    char *nome, *endereco, *telefone, *sobrenome, *email, *dataNascimento;
     // Quando estiver fazendo o codigo, lembre-se que essas strings
     // (esses char*) devem ser liberados usando a funcao 'free' em
     // algum momento antes do programa terminar!
-    nome = malloc(STRING_SIZE * sizeof(char));
+
+    nome = malloc(STRING_SIZE * sizeof(*nome));
     sobrenome = malloc(STRING_SIZE * sizeof(char));
     endereco = malloc(STRING_SIZE * sizeof(char));
     telefone = malloc(TEL_SIZE * sizeof(char));
     email = malloc(STRING_SIZE * sizeof(char));
+    dataNascimento = malloc(STRING_SIZE * sizeof(char));
+
 
     printf("Nome: ");
     fgets(nome, STRING_SIZE, stdin);
@@ -65,15 +74,17 @@ int addEntry(char *cmd, int argc, char **argv, agenda ag) {
     fgets(telefone, TEL_SIZE, stdin);
     printf("e-mail: ");
     fgets(email, STRING_SIZE, stdin);
+    printf("Data de Nascimento: " );
+    fgets(dataNascimento, STRING_SIZE, stdin);
 
     strtrim(nome);
     strtrim(sobrenome);
     strtrim(endereco);
     strtrim(telefone);
     strtrim(email);
+    strtrim(dataNascimento);
 
-    // ME COMPLETE!
-    printf("Eu deveria salvar a entrada de\n nome '%s'\n sobrenome '%s'\n telefone '%s'\n endereco '%s'\n email '%s\n'", nome, sobrenome, telefone, endereco, email);
+    printf("Eu deveria salvar a entrada de\n nome '%s'\n sobrenome '%s'\n telefone '%s'\n endereco '%s'\n email '%s\n' dataNascimento'%s'\n\n", nome, sobrenome, telefone, endereco, email, dataNascimento);
 
     printf("Salvo\n");
     return 0;
