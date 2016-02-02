@@ -14,7 +14,13 @@
 #define TEL_SIZE 20
 
 struct contato{
-    char *nome, *endereco, *telefone;
+
+    char *nome; 
+    char *sobrenome; 
+    char *endereco; 
+    char *telefone;
+    char *email;
+
     struct contato * prox;
 };
 typedef struct contato *agenda;
@@ -43,31 +49,41 @@ int agendaVazia(agenda ag){
 int addEntry(char *cmd, int argc, char **argv, agenda ag) {
     int flag = 0;
     agenda novo, anterior, atual;
-    char *nome, *endereco, *telefone;
+    char *nome, *sobrenome, *endereco, *telefone, *email;
 
     // Quando estiver fazendo o codigo, lembre-se que essas strings
     // (esses char*) devem ser liberados usando a funcao 'free' em
     // algum momento antes do programa terminar!
     nome = malloc(STRING_SIZE * sizeof(char));
+    sobrenome = malloc(STRING_SIZE* sizeof(char));
     endereco = malloc(STRING_SIZE * sizeof(char));
     telefone = malloc(TEL_SIZE * sizeof(char));
+    email = malloc(STRING_SIZE * sizeof(char));
 
 
     printf("Nome: ");
     fgets(nome, STRING_SIZE, stdin);
+    printf("Sobrenome: ");
+    fgets(sobrenome, STRING_SIZE, stdin);
     printf("Endereco: ");
     fgets(endereco, STRING_SIZE, stdin);
     printf("Telefone: ");
     fgets(telefone, TEL_SIZE, stdin);
+    printf("E-mail: ");
+    fgets(email, STRING_SIZE, stdin);
 
     strtrim(nome);
+    strtrim(sobrenome);
     strtrim(endereco);
     strtrim(telefone);
+    strtrim(email);
 
     novo = createAgenda();
     novo->nome = nome;
+    novo->sobrenome = sobrenome;
     novo->endereco = endereco;
     novo->telefone = telefone;
+    novo->email = email;
 
     if(agendaVazia(ag)){
         novo->prox = ag->prox;
@@ -75,12 +91,19 @@ int addEntry(char *cmd, int argc, char **argv, agenda ag) {
     }else {
         anterior = ag;
         atual = ag->prox;
+
         while(atual != NULL){
             if(strncmp(atual->nome,novo->nome,3) >= 0){
                 anterior->prox = novo;
                 novo->prox = atual;
                 flag = 1;
                 break;
+            }
+            if(strncmp(atual->sobrenome, novo->sobrenome, 3) >= 0){
+            	anterior->prox = novo;
+            	novo->prox = atual;
+            	flag = 1;
+            	break;
             }
             anterior = anterior->prox;
             atual = atual->prox;
@@ -96,7 +119,7 @@ int addEntry(char *cmd, int argc, char **argv, agenda ag) {
 
 int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
     agenda atual, anterior;
-    char *opcao, *nome, *aux;
+    char *opcao, *nome, *sobrenome, *endereco, *telefone, *email, *aux;
 
     anterior = ag;
     atual = ag->prox;
@@ -104,11 +127,15 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
     opcao = *argv;
 
     if(agendaVazia(ag)){
-        printf("Agenda vazia!!\n");
+        printf("Agenda vazia\n");
         return 0;
     }
 
     nome = malloc(STRING_SIZE * sizeof(char));
+    sobrenome = malloc(STRING_SIZE * sizeof(char));
+    endereco = malloc(STRING_SIZE * sizeof(char));
+    telefone = malloc(TEL_SIZE * sizeof(char));
+    email = malloc(STRING_SIZE * sizeof(char));
     aux = malloc(STRING_SIZE * sizeof(char));
 
     if(strcmp(opcao, "nome") == 0){
@@ -123,8 +150,9 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
                 if(strcmp(aux, nome) == 0){
                     anterior->prox = atual->prox;
                     free(atual->nome);
-                    free(atual->telefone);
+                    free(atual->sobrenome);
                     free(atual->endereco);
+                    free(atual->telefone);
                     free(atual);
                     printf("%s deletado!\n", nome);
                     break;
@@ -138,6 +166,110 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
             }
         }
     }
+
+    if(strcmp(opcao, "sobrenome") == 0){
+        printf("Sobrenome: ");
+        fgets(sobrenome, STRING_SIZE, stdin);
+        strtrim(sobrenome);
+
+        while(1){
+            if(atual != NULL){
+                aux = atual->sobrenome;
+                strtrim(aux);
+                if(strcmp(aux, sobrenome) == 0){
+                    anterior->prox = atual->prox;
+                    free(atual->sobrenome);
+                    //free(atual);
+                    printf("%s deletado!\n", sobrenome);
+                    break;
+                }else{
+                    atual = atual->prox;
+                    anterior = anterior->prox;
+                }
+            }else{
+                printf("Sobrenome nao encontrado\n");
+                break;
+            }
+        }
+    }
+
+    if(strcmp(opcao, "endereco") == 0){
+        printf("Endereco: ");
+        fgets(endereco, STRING_SIZE, stdin);
+        strtrim(endereco);
+
+        while(1){
+            if(atual != NULL){
+                aux = atual->endereco;
+                strtrim(aux);
+                if(strcmp(aux, endereco) == 0){
+                    anterior->prox = atual->prox;
+                    free(atual->endereco);
+                    //free(atual);
+                    printf("%s deletado!\n", endereco);
+                    break;
+                }else{
+                    atual = atual->prox;
+                    anterior = anterior->prox;
+                }
+            }else{
+                printf("Endereco nao encontrado\n");
+                break;
+            }
+        }
+    }
+
+        if(strcmp(opcao, "telefone") == 0){
+        printf("Telefone: ");
+        fgets(telefone, TEL_SIZE, stdin);
+        strtrim(telefone);
+
+        while(1){
+            if(atual != NULL){
+                aux = atual->telefone;
+                strtrim(aux);
+                if(strcmp(aux, telefone) == 0){
+                    anterior->prox = atual->prox;
+                    free(atual->telefone);
+                    //free(atual);
+                    printf("%s deletado!\n", telefone);
+                    break;
+                }else{
+                    atual = atual->prox;
+                    anterior = anterior->prox;
+                }
+            }else{
+                printf("Telefone nao encontrado\n");
+                break;
+            }
+        }
+    }
+    	if(strcmp(opcao, "email") == 0){
+        printf("E-mail: ");
+        fgets(email, STRING_SIZE, stdin);
+        strtrim(email);
+
+        while(1){
+            if(atual != NULL){
+                aux = atual->email;
+                strtrim(aux);
+                if(strcmp(aux, email) == 0){
+                    anterior->prox = atual->prox;
+                    free(atual->email);
+                    //free(atual);
+                    printf("%s deletado!\n", email);
+                    break;
+                }else{
+                    atual = atual->prox;
+                    anterior = anterior->prox;
+                }
+            }else{
+                printf("E-mail nao encontrado\n");
+                break;
+            }
+        }
+    }
+    
 
     return 0;
 }
@@ -153,10 +285,10 @@ agenda primeiro = ag->prox;
     }
 
 
-    printf("%-10s | %-15s | %-10s \n", "Nome", "Endereco", "Telefone");
+    printf("%-10s | %-15s | %-15s | %-10s | %-15s\n", "Nome", "Sobrenome", "Endereco", "Telefone", "E-mail");
 
     while(primeiro != NULL){
-        printf("%-10s | %-15s | %-10s \n", primeiro->nome, primeiro->endereco, primeiro->telefone);
+        printf("%-10s | %-15s |  %-15s | %-10s | %-15s\n", primeiro->nome, primeiro->sobrenome, primeiro->endereco, primeiro->telefone, primeiro->email);
         primeiro = primeiro->prox;
     }
 
@@ -195,6 +327,11 @@ int (*findCommand(char *cmdName)) (char*, int, char**, agenda) {
         return &deleteEntry;
     }
     if (strcmp(cmdName, "listar") == 0) {
+    	int opcao;
+    	printf("Deseja ordenar sua por:\n[1] Nome\n[2] Sobrenome\n[3] Endereco\n[4] E-mail\n");
+    	printf(">");
+    	scanf("%d", &opcao);
+
         return &listEntries;
     }
     if (strcmp(cmdName, "sair") == 0 || strcmp(cmdName, "exit") == 0) {
