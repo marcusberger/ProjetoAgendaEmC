@@ -14,21 +14,10 @@
 #define TEL_SIZE 20
 
 struct contato{
-
-    int tamanho;
-
-    char nome[STRING_SIZE];
-    char sobrenome[STRING_SIZE];
-    char endereco[STRING_SIZE];
-    char telefone[TEL_SIZE];
-    char email[STRING_SIZE];
-    char dataNascimento[STRING_SIZE];
-
-
-    struct contato *prox;
+    char *nome, *endereco, *telefone;
+    struct contato * prox;
 };
 typedef struct contato *agenda;
-
 
 // Funcao que recebe uma string 'str' e remove
 // as quebras de linhas e espacos do final.
@@ -40,65 +29,139 @@ void strtrim(char* str) {
 }
 
 agenda createAgenda() {
-
     agenda ag;
     ag = (agenda) malloc(sizeof(*ag));
-    ag->tamanho = 0;
     ag->prox = NULL;
 
     return ag;
 }
+
+int agendaVazia(agenda ag){
+    return ag->prox == NULL;
+}
 // Um exemplo de como ler as entradas
 int addEntry(char *cmd, int argc, char **argv, agenda ag) {
-    // ME COMPLETE!
-    char *nome, *endereco, *telefone, *sobrenome, *email, *dataNascimento;
+    int flag = 0;
+    agenda novo, anterior, atual;
+    char *nome, *endereco, *telefone;
+
     // Quando estiver fazendo o codigo, lembre-se que essas strings
     // (esses char*) devem ser liberados usando a funcao 'free' em
     // algum momento antes do programa terminar!
-
-    nome = malloc(STRING_SIZE * sizeof(*nome));
-    sobrenome = malloc(STRING_SIZE * sizeof(char));
+    nome = malloc(STRING_SIZE * sizeof(char));
     endereco = malloc(STRING_SIZE * sizeof(char));
     telefone = malloc(TEL_SIZE * sizeof(char));
-    email = malloc(STRING_SIZE * sizeof(char));
-    dataNascimento = malloc(STRING_SIZE * sizeof(char));
 
 
     printf("Nome: ");
     fgets(nome, STRING_SIZE, stdin);
-    printf("Sobrenome: ");
-    fgets(sobrenome, STRING_SIZE, stdin);
     printf("Endereco: ");
     fgets(endereco, STRING_SIZE, stdin);
     printf("Telefone: ");
     fgets(telefone, TEL_SIZE, stdin);
-    printf("e-mail: ");
-    fgets(email, STRING_SIZE, stdin);
-    printf("Data de Nascimento: " );
-    fgets(dataNascimento, STRING_SIZE, stdin);
 
     strtrim(nome);
-    strtrim(sobrenome);
     strtrim(endereco);
     strtrim(telefone);
-    strtrim(email);
-    strtrim(dataNascimento);
 
-    printf("Eu deveria salvar a entrada de\n nome '%s'\n sobrenome '%s'\n telefone '%s'\n endereco '%s'\n email '%s\n' dataNascimento'%s'\n\n", nome, sobrenome, telefone, endereco, email, dataNascimento);
+    novo = createAgenda();
+    novo->nome = nome;
+    novo->endereco = endereco;
+    novo->telefone = telefone;
+
+    if(agendaVazia(ag)){
+        novo->prox = ag->prox;
+        ag->prox = novo;
+    }else {
+        anterior = ag;
+        atual = ag->prox;
+        while(atual != NULL){
+            if(strncmp(atual->nome,novo->nome,3) >= 0){
+                anterior->prox = novo;
+                novo->prox = atual;
+                flag = 1;
+                break;
+            }
+            anterior = anterior->prox;
+            atual = atual->prox;
+        }
+        if(flag == 0){
+            anterior->prox = novo;
+        }
+    }
 
     printf("Salvo\n");
     return 0;
 }
 
 int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
-    // ME COMPLETE!
-    printf("Deletado!\n");
+    agenda atual, anterior;
+    char *opcao, *nome, *aux;
+
+    anterior = ag;
+    atual = ag->prox;
+
+    opcao = *argv;
+
+    if(agendaVazia(ag)){
+        printf("Agenda vazia!!\n");
+        return 0;
+    }
+
+    nome = malloc(STRING_SIZE * sizeof(char));
+    aux = malloc(STRING_SIZE * sizeof(char));
+
+    if(strcmp(opcao, "nome") == 0){
+        printf("Nome: ");
+        fgets(nome, STRING_SIZE, stdin);
+        strtrim(nome);
+
+        while(1){
+            if(atual != NULL){
+                aux = atual->nome;
+                strtrim(aux);
+                if(strcmp(aux, nome) == 0){
+                    anterior->prox = atual->prox;
+                    free(atual->nome);
+                    free(atual->telefone);
+                    free(atual->endereco);
+                    free(atual);
+                    printf("%s deletado!\n", nome);
+                    break;
+                }else{
+                    atual = atual->prox;
+                    anterior = anterior->prox;
+                }
+            }else{
+                printf("Nome nao encontrado\n");
+                break;
+            }
+        }
+    }
+
     return 0;
 }
 
 int listEntries(char *cmd, int argc, char **argv, agenda ag) {
-    // ME COMPLETE!
-    printf("Listando...\n");
+
+agenda primeiro = ag->prox;
+
+
+    if(agendaVazia(ag)){
+        printf("Agenda vazia!!\n");
+        return 0;
+    }
+
+
+    printf("%-10s | %-15s | %-10s \n", "Nome", "Endereco", "Telefone");
+
+    while(primeiro != NULL){
+        printf("%-10s | %-15s | %-10s \n", primeiro->nome, primeiro->endereco, primeiro->telefone);
+        primeiro = primeiro->prox;
+    }
+
+
+
     return 0;
 }
 
