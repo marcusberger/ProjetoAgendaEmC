@@ -99,12 +99,6 @@ int addEntry(char *cmd, int argc, char **argv, agenda ag) {
                 flag = 1;
                 break;
             }
-            if(strncmp(atual->sobrenome, novo->sobrenome, 3) >= 0){
-            	anterior->prox = novo;
-            	novo->prox = atual;
-            	flag = 1;
-            	break;
-            }
             anterior = anterior->prox;
             atual = atual->prox;
         }
@@ -178,8 +172,11 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
                 strtrim(aux);
                 if(strcmp(aux, sobrenome) == 0){
                     anterior->prox = atual->prox;
+                    free(atual->nome);
                     free(atual->sobrenome);
-                    //free(atual);
+                    free(atual->endereco);
+                    free(atual->telefone);
+                    free(atual);
                     printf("%s deletado!\n", sobrenome);
                     break;
                 }else{
@@ -204,8 +201,11 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
                 strtrim(aux);
                 if(strcmp(aux, endereco) == 0){
                     anterior->prox = atual->prox;
+                    free(atual->nome);
+                    free(atual->sobrenome);
                     free(atual->endereco);
-                    //free(atual);
+                    free(atual->telefone);
+                    free(atual);
                     printf("%s deletado!\n", endereco);
                     break;
                 }else{
@@ -230,8 +230,11 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
                 strtrim(aux);
                 if(strcmp(aux, telefone) == 0){
                     anterior->prox = atual->prox;
+                    free(atual->nome);
+                    free(atual->sobrenome);
+                    free(atual->endereco);
                     free(atual->telefone);
-                    //free(atual);
+                    free(atual);
                     printf("%s deletado!\n", telefone);
                     break;
                 }else{
@@ -255,8 +258,11 @@ int deleteEntry(char *cmd, int argc, char **argv, agenda ag) {
                 strtrim(aux);
                 if(strcmp(aux, email) == 0){
                     anterior->prox = atual->prox;
-                    free(atual->email);
-                    //free(atual);
+                    free(atual->nome);
+                    free(atual->sobrenome);
+                    free(atual->endereco);
+                    free(atual->telefone);
+                    free(atual);
                     printf("%s deletado!\n", email);
                     break;
                 }else{
@@ -283,6 +289,7 @@ agenda primeiro = ag->prox;
         printf("Agenda vazia!!\n");
         return 0;
     }
+
 
 
     printf("%-10s | %-15s | %-15s | %-10s | %-15s\n", "Nome", "Sobrenome", "Endereco", "Telefone", "E-mail");
@@ -327,10 +334,6 @@ int (*findCommand(char *cmdName)) (char*, int, char**, agenda) {
         return &deleteEntry;
     }
     if (strcmp(cmdName, "listar") == 0) {
-    	int opcao;
-    	printf("Deseja ordenar sua por:\n[1] Nome\n[2] Sobrenome\n[3] Endereco\n[4] E-mail\n");
-    	printf(">");
-    	scanf("%d", &opcao);
 
         return &listEntries;
     }
